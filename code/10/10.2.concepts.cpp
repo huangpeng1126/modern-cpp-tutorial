@@ -12,16 +12,17 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <concepts>
 
 using namespace std;
 
- template<typename T>
-concept bool Stringable = requires(T a){
+template<typename T>
+concept Stringable = requires(T a){
     {a.to_string()} -> string;
 };
 
- template<typename T>
-concept bool HasStringFunc = requires(T a){
+template<typename T>
+concept HasStringFunc = requires(T a){
     { to_string(a) } -> string;
 };
 

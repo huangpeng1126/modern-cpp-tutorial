@@ -9,6 +9,8 @@
 
 
 #include <iostream>
+#include <cstddef>
+
 
 struct Storage {
     char      a;
