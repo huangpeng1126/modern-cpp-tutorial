@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.20.0)
 
 include(CTest)
 enable_testing()
 
-find_package(OpenSSL)
-find_package(Boost)
+set(ENV{OPENSSL_ROOT_DIR} "/usr/local/Cellar/openssl@1.1/1.1.1l/")
+find_package(OpenSSL REQUIRED)
+find_package(Boost REQUIRED)
 add_executable(main.http main.http.cpp)
 add_executable(main.https main.https.cpp)
 
