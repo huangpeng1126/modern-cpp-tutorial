@@ -118,7 +118,7 @@ And select the appropriate location to insert into the container. When traversin
 The elements in the unordered container are not sorted, and the internals is implemented by the Hash table. The average complexity of inserting and searching for elements is `O(constant)`,
 Significant performance gains can be achieved without concern for the order of the elements inside the container.
 
-C++11 introduces two sets of unordered containers: `std::unordered_map`/`std::unordered_multimap` and
+C++11 introduces two unordered containers: `std::unordered_map`/`std::unordered_multimap` and
 `std::unordered_set`/`std::unordered_multiset`.
 
 Their usage is basically similar to the original `std::map`/`std::multimap`/`std::set`/`set::multiset`
@@ -305,4 +305,4 @@ Although `std::tuple` is effective, the standard library provides limited functi
 
 ## Licenses
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work was written by [Ou Changkun](https://changkun.de) and licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. The code of this repository is open sourced under the [MIT license](../../LICENSE).
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work was written by [Ou Changkun](https://changkun.de) and licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. The code of this repository is open sourced under the [MIT license](../../LICENSE).

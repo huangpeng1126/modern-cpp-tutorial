@@ -57,21 +57,27 @@ And see the reference count of an object by `use_count()`. E.g:
 auto pointer = std::make_shared<int>(10);
 auto pointer2 = pointer; // reference count+1
 auto pointer3 = pointer; // reference count+1
-int *p = pointer.get(); // no increase of reference count
-std::cout << "pointer.use_count() = " << pointer.use_count() << std::endl; // 3
+int *p = pointer.get();  // no increase of reference count
+
+std::cout << "pointer.use_count() = " << pointer.use_count() << std::endl;   // 3
 std::cout << "pointer2.use_count() = " << pointer2.use_count() << std::endl; // 3
 std::cout << "pointer3.use_count() = " << pointer3.use_count() << std::endl; // 3
 
 pointer2.reset();
 std::cout << "reset pointer2:" << std::endl;
-std::cout << "pointer.use_count() = " << pointer.use_count() << std::endl; // 2
-std::cout << "pointer2.use_count() = " << pointer2.use_count() << std::endl; // 0, pointer2 has reset
+
+std::cout << "pointer.use_count() = " << pointer.use_count() << std::endl;   // 2
+std::cout << "pointer2.use_count() = " 
+    << pointer2.use_count() << std::endl;                // pointer2 has reset, 0
 std::cout << "pointer3.use_count() = " << pointer3.use_count() << std::endl; // 2
+
 pointer3.reset();
 std::cout << "reset pointer3:" << std::endl;
-std::cout << "pointer.use_count() = " << pointer.use_count() << std::endl; // 1
+
+std::cout << "pointer.use_count() = " << pointer.use_count() << std::endl;   // 1
 std::cout << "pointer2.use_count() = " << pointer2.use_count() << std::endl; // 0
-std::cout << "pointer3.use_count() = " << pointer3.use_count() << std::endl; // 0, pointer3 has reset
+std::cout << "pointer3.use_count() = " 
+    << pointer3.use_count() << std::endl;                // pointer3 has reset, 0
 ```
 
 ## 5.3 `std::unique_ptr`
@@ -79,7 +85,7 @@ std::cout << "pointer3.use_count() = " << pointer3.use_count() << std::endl; // 
 `std::unique_ptr` is an exclusive smart pointer that prohibits other smart pointers from sharing the same object, thus keeping the code safe:
 
 ```cpp
-std::unique_ptr<int> pointer = std::make_unique<int>(10); // make_unique was introduced in C++14
+std::unique_ptr<int> pointer = std::make_unique<int>(10); // make_unique, from C++14
 std::unique_ptr<int> pointer2 = pointer; // illegal
 ```
 
@@ -185,7 +191,8 @@ The solution to this problem is to use the weak reference pointer `std::weak_ptr
 
 In the above figure, only B is left in the last step, and B does not have any smart pointers to reference it, so this memory resource will also be released.
 
-`std::weak_ptr` has no `*` operator and `->` operator, so it can't operate on resources. Its only function is to check if `std::shared_ptr` exists, its `expired()` method can return `false` when the resource is not released, otherwise, it returns `true`.
+`std::weak_ptr` has no implemented `*` and `->` operators, therefore it cannot operate on resources. `std::weak_ptr` allows us to check if a `std::shared_ptr` exists or not. The `expired()` method of a `std::weak_ptr` returns `false` when the resource is not released; Otherwise, it returns `true`.
+Furthermore, it can also be used for the purpose of obtaining `std::shared_ptr`, which points to the original object. The `lock()` method returns a `std::shared_ptr` to the original object when the resource is not released, or `nullptr` otherwise.
 
 ## Conclusion
 
@@ -195,8 +202,8 @@ The technology of smart pointers is not novel. It is a common technology in many
 
 ## Further Readings
 
-- [Why does C++11 have `make_shared` but not `make_unique`](http://stackoverflow.com/questions/12580432/why-does-c11-have-make-shared-but-not-make-unique)
+- [Why does C++11 have `make_shared` but not `make_unique`](https://stackoverflow.com/questions/12580432/why-does-c11-have-make-shared-but-not-make-unique)
 
 ## Licenses
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work was written by [Ou Changkun](https://changkun.de) and licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. The code of this repository is open sourced under the [MIT license](../../LICENSE).
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work was written by [Ou Changkun](https://changkun.de) and licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. The code of this repository is open sourced under the [MIT license](../../LICENSE).

@@ -176,12 +176,13 @@ int main() {
     }
 
     // 将输出 1, 4, 3, 4
-    for (std::vector<int>::iterator element = vec.begin(); element != vec.end(); ++element)
+    for (std::vector<int>::iterator element = vec.begin(); element != vec.end(); 
+        ++element)
         std::cout << *element << std::endl;
 }
 ```
 
-在上面的代码中，我们可以看到 `itr` 这一变量是定义在整个 `main()` 的作用域内的，这导致当我们需要再次遍历整个 `std::vectors` 时，需要重新命名另一个变量。C++17 消除了这一限制，使得我们可以在 `if`（或 `switch`）中完成这一操作：
+在上面的代码中，我们可以看到 `itr` 这一变量是定义在整个 `main()` 的作用域内的，这导致当我们需要再次遍历整个 `std::vector` 时，需要重新命名另一个变量。C++17 消除了这一限制，使得我们可以在 `if`（或 `switch`）中完成这一操作：
 
 ```cpp
 // 将临时变量放到 if 语句内
@@ -228,11 +229,13 @@ int main() {
 }
 ```
 
-为了解决这个问题，C++11 首先把初始化列表的概念绑定到了类型上，并将其称之为 `std::initializer_list`，允许构造函数或其他函数像参数一样使用初始化列表，这就为类对象的初始化与普通数组和 POD 的初始化方法提供了统一的桥梁，例如：
+为解决这个问题，C++11 首先把初始化列表的概念绑定到类型上，称其为 `std::initializer_list`，允许构造函数或其他函数像参数一样使用初始化列表，这就为类对象的初始化与普通数组和 POD 的初始化方法提供了统一的桥梁，例如：
 
 ```cpp
 #include <initializer_list>
 #include <vector>
+#include <iostream>
+
 class MagicFoo {
 public:
     std::vector<int> vec;
@@ -247,7 +250,9 @@ int main() {
     MagicFoo magicFoo = {1, 2, 3, 4, 5};
 
     std::cout << "magicFoo: ";
-    for (std::vector<int>::iterator it = magicFoo.vec.begin(); it != magicFoo.vec.end(); ++it) std::cout << *it << std::endl;
+    for (std::vector<int>::iterator it = magicFoo.vec.begin(); 
+        it != magicFoo.vec.end(); ++it) 
+        std::cout << *it << std::endl;
 }
 ```
 
@@ -309,8 +314,8 @@ C++11 引入了 `auto` 和 `decltype` 这两个关键字实现了类型推导，
 ```cpp
 // 在 C++11 之前
 // 由于 cbegin() 将返回 vector<int>::const_iterator
-// 所以 itr 也应该是 vector<int>::const_iterator 类型
-for(vector<int>::const_iterator it = vec.cbegin(); itr != vec.cend(); ++it)
+// 所以 it 也应该是 vector<int>::const_iterator 类型
+for(vector<int>::const_iterator it = vec.cbegin(); it != vec.cend(); ++it)
 ```
 
 而有了 `auto` 之后可以：
@@ -417,7 +422,7 @@ R add(T x, U y) {
 }
 ```
 
-> 注意：typename 和 class 在模板参数列表中没有区别，在 typename 这个关键字出现之前，都是使用 class 来定义模板参数的。但在模板中定义有[嵌套依赖类型](http://en.cppreference.com/w/cpp/language/dependent_name#The_typename_disambiguator_for_dependent_names)的变量时，需要用 typename 消除歧义
+> 注意：typename 和 class 在模板参数列表中没有区别，在 typename 这个关键字出现之前，都是使用 class 来定义模板参数的。但在模板中定义有[嵌套依赖类型](https://en.cppreference.com/w/cpp/language/dependent_name#The_typename_disambiguator_for_dependent_names)的变量时，需要用 typename 消除歧义
 
 
 这样的代码其实变得很丑陋，因为程序员在使用这个模板函数的时候，必须明确指出返回类型。但事实上我们并不知道 `add()` 这个函数会做什么样的操作，以及获得一个什么样的返回类型。
@@ -875,7 +880,7 @@ C++11 引入了 `override` 和 `final` 这两个关键字来防止上述情形�
 
 #### override
 
-当重载虚函数时，引入 `override` 关键字将显式的告知编译器进行重载，编译器将检查基函数是否存在这样的虚函数，否则将无法通过编译：
+当重载虚函数时，引入 `override` 关键字将显式的告知编译器进行重载，编译器将检查基函数是否存在这样的其函数签名一致的虚函数，否则将无法通过编译：
 
 ```cpp
 struct Base {
@@ -1019,6 +1024,6 @@ std::cout << new_enum::value3 << std::endl
 
 ## 许可
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a>
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a>
 
-本书系[欧长坤](https://github.com/changkun)著，采用[知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议](http://creativecommons.org/licenses/by-nc-nd/4.0/)许可。项目中代码使用 MIT 协议开源，参见[许可](../../LICENSE)。
+本书系[欧长坤](https://github.com/changkun)著，采用[知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议](https://creativecommons.org/licenses/by-nc-nd/4.0/)许可。项目中代码使用 MIT 协议开源，参见[许可](../../LICENSE)。

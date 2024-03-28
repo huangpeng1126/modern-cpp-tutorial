@@ -11,7 +11,7 @@ order: 0
 ## 引言
 
 C++ 是一个用户群体相当大的语言。从 C++98 的出现到 C++11 的正式定稿经历了长达十年多之久的积累。C++14/17 则是作为对 C++11 的重要补充和优化，C++20 则将这门语言领进了现代化的大门，所有这些新标准中扩充的特性，给 C++ 这门语言注入了新的活力。
-那些还在坚持使用**传统 C++**（本书把 C++98 及其之前的 C++ 特性均称之为传统 C++）而未接触过现代 C++ 的 C++ 程序员在见到诸如 Lambda 表达式这类全新特性时，甚至会流露出『学的不是同一门语言』的惊叹之情。
+那些还在坚持使用**传统 C++** （本书把 C++98 及其之前的 C++ 特性均称之为传统 C++）而未接触过现代 C++ 的 C++ 程序员在见到诸如 Lambda 表达式这类全新特性时，甚至会流露出『学的不是同一门语言』的惊叹之情。
 
 **现代 C++** (本书中均指 C++11/14/17/20) 为传统 C++ 注入的大量特性使得整个 C++ 变得更加像一门现代化的语言。现代 C++ 不仅仅增强了 C++ 语言自身的可用性，`auto` 关键字语义的修改使得我们更加有信心来操控极度复杂的模板类型。同时还对语言运行期进行了大量的强化，Lambda 表达式的出现让 C++ 具有了『匿名函数』的『闭包』特性，而这一特性几乎在现代的编程语言（诸如 Python/Swift/... ）中已经司空见惯，右值引用的出现解决了 C++ 长期以来被人诟病的临时对象效率问题等等。
 
@@ -46,6 +46,6 @@ C++17 则是近三年依赖 C++ 社区一致推进的方向，也指出了 **现
 
 ## 许可
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a>
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a>
 
-本书系[欧长坤](https://github.com/changkun)著，采用[知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议](http://creativecommons.org/licenses/by-nc-nd/4.0/)许可。项目中代码使用 MIT 协议开源，参见[许可](../../LICENSE)。
+本书系[欧长坤](https://github.com/changkun)著，采用[知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议](https://creativecommons.org/licenses/by-nc-nd/4.0/)许可。项目中代码使用 MIT 协议开源，参见[许可](../../LICENSE)。

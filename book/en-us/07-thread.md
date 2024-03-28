@@ -41,6 +41,7 @@ RAII guarantees the exceptional security of the code while keeping the simplicit
 
 ```cpp
 #include <iostream>
+#include <mutex>
 #include <thread>
 
 int v = 1;
@@ -68,7 +69,7 @@ int main() {
 Because C++ guarantees that all stack objects will be destroyed at the end of the declaration period, such code is also extremely safe.
 Whether `critical_section()` returns normally or if an exception is thrown in the middle, a stack rollback is thrown, and `unlock()` is automatically called.
 
-And `std::unique_lock` is more flexible than `std::lock_guard`, `std::unique_lock` is more flexible.
+`std::unique_lock` is more flexible than `std::lock_guard`.
 Objects of `std::unique_lock` manage the locking and unlocking operations on the `mutex` object with exclusive ownership (no other `unique_lock` objects owning the ownership of a `mutex` object). So in concurrent programming, it is recommended to use `std::unique_lock`.
 
 `std::lock_guard` cannot explicitly call `lock` and `unlock`, and `std::unique_lock` can be called anywhere after the declaration.
@@ -80,6 +81,7 @@ For instance:
 
 ```cpp
 #include <iostream>
+#include <mutex>
 #include <thread>
 
 int v = 1;
@@ -143,7 +145,8 @@ int main() {
     std::cout << "waiting...";
     result.wait(); // block until future has arrived
     // output result
-    std::cout << "done!" << std:: endl << "future result is " << result.get() << std::endl;
+    std::cout << "done!" << std:: endl << "future result is " 
+              << result.get() << std::endl;
     return 0;
 }
 ```
@@ -194,7 +197,8 @@ int main() {
             // temporal unlock to allow producer produces more rather than
             // let consumer hold the lock until its consumed.
             lock.unlock();
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // consumer is slower
+            // consumer is slower
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             lock.lock();
             if (!produced_nums.empty()) {
                 std::cout << "consuming " << produced_nums.front() << std::endl;
@@ -253,7 +257,7 @@ int main() {
 }
 ```
 
-Intuitively, `a = 5;` seems in `t2` seems to always execute before `flag = 1;`, and `while (flag != 1)` in `t1` seems to guarantee `std ::cout << "b = " << b << std::endl;` will not be executed before the mark is changed. Logically, it seems that the value of `b` should be equal to 5.
+Intuitively, it  seems that `a = 5;` in `t2` always executes before `flag = 1;` and `while (flag != 1)` in `t1`. It looks like there is a guarantee the line `std ::cout << "b = " << b << std::endl;` will not be executed before the mark is changed. Logically, it seems that the value of `b` should be equal to 5.
 But the actual situation is much more complicated than this, or the code itself is undefined behavior because, for `a` and `flag`, they are read and written in two parallel threads.
 There has been competition. Also, even if we ignore competing for reading and writing, it is still possible to receive out-of-order execution of the CPU and the impact of the compiler on the rearrangement of instructions.
 Cause `a = 5` to occur after `flag = 1`. Thus `b` may output 0.
@@ -270,7 +274,7 @@ This is a very strong set of synchronization conditions, in other words when it 
 This seems too harsh for a variable that requires only atomic operations (no intermediate state).
 
 The research on synchronization conditions has a very long history, and we will not go into details here. Readers should understand that under the modern CPU architecture, atomic operations at the CPU instruction level are provided.
-Therefore, in the C + + 11 multi-threaded shared variable reading and writing, the introduction of the `std::atomic` template, so that we instantiate an atomic type, will be a
+Therefore, in the C++11 multi-threaded shared variable reading and writing, the introduction of the `std::atomic` template, so that we instantiate an atomic type, will be an
 Atomic type read and write operations are minimized from a set of instructions to a single CPU instruction. E.g:
 
 ```cpp
@@ -322,7 +326,7 @@ int main() {
 }
 ```
 
-### Concistency Model
+### Consistency Model
 
 Multiple threads executing in parallel, discussed at some macro level, can be roughly considered a distributed system.
 In a distributed system, any communication or even local operation takes a certain amount of time, and even unreliable communication occurs.
@@ -366,7 +370,7 @@ Weakening the synchronization conditions between processes, usually we will cons
          x.store(2)
    ```
 
-   Under the order consistency requirement, `x.load()` must read the last written data, so `x.store(2)` and `x.store(1)` do not have any guarantees, ie As long as `x.store(2)` of `T2` occurs before `x.store(3)`.
+   Under the order consistency requirement, `x.load()` must read the last written data, so `x.store(2)` and `x.store(1)` do not have any guarantees, as long as `x.store(2)` of `T2` occurs before `x.store(3)`.
 
 3. Causal consistency: its requirements are further reduced, only the sequence of causal operations is guaranteed, and the order of non-causal operations is not required.
 
@@ -415,8 +419,11 @@ Weakening the synchronization conditions between processes, usually we will cons
    ```
    3 4 4 4 // The write operation of x was quickly observed
    0 3 3 4 // There is a delay in the observed time of the x write operation
-   0 0 0 4 // The last read read the final value of x, but the previous changes were not observed.
-   0 0 0 0 // The write operation of x is not observed in the current time period, but the situation that x is 4 can be observed at some point in the future.
+   0 0 0 4 // The last read read the final value of x, 
+           // but the previous changes were not observed.
+   0 0 0 0 // The write operation of x is not observed in the current time period, 
+           // but the situation that x is 4 can be observed 
+           // at some point in the future.
    ```
 
 ### Memory Orders
@@ -440,7 +447,7 @@ To achieve the ultimate performance and achieve consistency of various strength 
    std::cout << "current counter:" << counter << std::endl;
    ```
 
-2. Release/consumption model: In this model, we begin to limit the order of operations between processes. If a thread needs to modify a value, but another thread will have a dependency on that operation of the value, that is, the latter depends. former. Specifically, thread A has completed three writes to `x`, and thread `B` relies only on the third `x` write operation, regardless of the first two write behaviors of `x`, then `A ` When active `x.release()` (ie using `std::memory_order_release`), the option `std::memory_order_consume` ensures that `B` observes `A` when calling `x.load()` Three writes to `x`. Let's look at an example:
+2. Release/consumption model: In this model, we begin to limit the order of operations between processes. If a thread needs to modify a value, but another thread will have a dependency on that operation of the value, that is, the latter depends on the former. Specifically, thread A has completed three writes to `x`, and thread `B` relies only on the third `x` write operation, regardless of the first two write behaviors of `x`, then `A ` When active `x.release()` (ie using `std::memory_order_release`), the option `std::memory_order_consume` ensures that `B` observes `A` when calling `x.load()` Three writes to `x`. Let's look at an example:
 
    ```cpp
    // initialize as nullptr to prevent consumer load a dangling pointer
@@ -466,7 +473,7 @@ To achieve the ultimate performance and achieve consistency of various strength 
 
    As you can see, `std::memory_order_release` ensures that a write before a release does not occur after the release operation, which is a **backward barrier**, and `std::memory_order_acquire` ensures that a subsequent read or write after a acquire does not occur before the acquire operation, which is a **forward barrier**.
    For the `std::memory_order_acq_rel` option, combines the characteristics of the two barriers and determines a unique memory barrier, such that reads and writes of the current thread will not be rearranged across the barrier.
- 
+
    Let's check an example:
 
    ```cpp
@@ -478,9 +485,8 @@ To achieve the ultimate performance and achieve consistency of various strength 
    });
    std::thread acqrel([&]() {
        int expected = 1; // must before compare_exchange_strong
-       while(!flag.compare_exchange_strong(expected, 2, std::memory_order_acq_rel)) {
+       while(!flag.compare_exchange_strong(expected, 2, std::memory_order_acq_rel)) 
            expected = 1; // must after compare_exchange_strong
-       }
        // flag has changed to 2
    });
    std::thread acquire([&]() {
@@ -493,7 +499,7 @@ To achieve the ultimate performance and achieve consistency of various strength 
    acquire.join();
    ```
 
-   In this case we used `compare_exchange_strong`, which is the Compare-and-swap primitive, which has a weaker version, `compare_exchange_weak`, which allows a failure to be returned even if the exchange is successful. The reason is due to a false failure on some platforms, specifically when the CPU performs a context switch, another thread loads the same address to produce an inconsistency. In addition, the performance of `compare_exchange_strong` may be slightly worse than `compare_exchange_weak`, but in most cases, `compare_exchange_strong` should be limited.
+   In this case we used `compare_exchange_strong`, which is the Compare-and-swap primitive, which has a weaker version, `compare_exchange_weak`, which allows a failure to be returned even if the exchange is successful. The reason is due to a false failure on some platforms, specifically when the CPU performs a context switch, another thread loads the same address to produce an inconsistency. In addition, the performance of `compare_exchange_strong` may be slightly worse than `compare_exchange_weak`. However, in most cases, `compare_exchange_weak` is discouraged due to the complexity of its usage.
 
 4. Sequential Consistent Model: Under this model, atomic operations satisfy sequence consistency, which in turn can cause performance loss. It can be specified explicitly by `std::memory_order_seq_cst`. Let's look at a final example:
 
@@ -542,10 +548,10 @@ They provide a critical foundation for standardized high-performance computing f
 
 ## Further Readings
 
-- [C++ 并发编程(中文版)](https://www.amazon.com/dp/1617294691/ref=cm_sw_em_r_mt_dp_U_siEmDbRMMF960)
-- [Thread document](http://en.cppreference.com/w/cpp/thread)
+- [C++ Concurrency in Action](https://www.amazon.com/dp/1617294691/ref=cm_sw_em_r_mt_dp_U_siEmDbRMMF960)
+- [Thread document](https://en.cppreference.com/w/cpp/thread)
 - Herlihy, M. P., & Wing, J. M. (1990). Linearizability: a correctness condition for concurrent objects. ACM Transactions on Programming Languages and Systems, 12(3), 463–492. https://doi.org/10.1145/78969.78972
 
 ## Licenses
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work was written by [Ou Changkun](https://changkun.de) and licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. The code of this repository is open sourced under the [MIT license](../../LICENSE).`
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work was written by [Ou Changkun](https://changkun.de) and licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. The code of this repository is open sourced under the [MIT license](../../LICENSE).`
